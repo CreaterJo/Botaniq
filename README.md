@@ -1,56 +1,36 @@
-# 🌱 Botaniq – Dein digitaler Pflanzenführer
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Willkommen bei **Botaniq** – der interaktiven Plattform, auf der du alle wichtigen Informationen zu nahezu jeder bekannten Pflanzenart findest.  
-Ob du Anfänger oder erfahrener Gärtner bist – Botaniq hilft dir, Pflanzen besser zu verstehen und zu pflegen.
+## Getting Started
 
----
+First, run the development server:
 
-## 📖 Was ist Botaniq?
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-Botaniq ist eine Online-Datenbank mit einer modernen, klaren Oberfläche im Apple-Style.  
-Hier kannst du gezielt nach Pflanzen suchen oder in Kategorien stöbern und bekommst sofort übersichtliche, verlässliche Informationen:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- **Botanischer Name & allgemeiner Name**
-- **Lichtbedarf** (Sonne, Halbschatten, Schatten)
-- **Pflegehinweise** (Gießen, Düngen, Umtopfen)
-- **Standortempfehlungen**
-- **Besondere Eigenschaften**
-- **Quellenangaben** für alle Informationen
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
----
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## ✨ Funktionen
+## Learn More
 
-- 🔍 **Suchleiste**: Finde schnell jede Pflanze nach Name oder Kategorie.
-- 📂 **Kategorien & Unterkategorien**: Entdecke Pflanzen nach Typ (z. B. Zimmerpflanzen, Kräuter, Bäume).
-- 🎨 **Apple-inspiriertes Design**: Minimalistisch, übersichtlich, mit sanften Zoom- und Parallax-Effekten.
-- 📑 **Quellen im Footer**: Jede Pflanzenbeschreibung ist mit verlässlichen Quellen belegt.
-- 📱 **Responsiv**: Optimiert für Smartphone, Tablet und Desktop.
+To learn more about Next.js, take a look at the following resources:
 
----
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## 🚀 So benutzt du Botaniq
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-1. **Startseite öffnen** – du siehst direkt eine Suchleiste und beliebte Pflanzen.
-2. **Pflanze suchen** – gib den Namen ein oder nutze das Menü oben links (Burger-Menü).
-3. **Details ansehen** – klicke auf eine Pflanze, um alle Infos anzuzeigen.
-4. **Quellen prüfen** – ganz unten auf der Seite findest du die genutzten Quellen.
+## Deploy on Vercel
 
----
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-## 💻 Wie starte ich Botaniq?
-
-Botaniq ist eine **Webseite** – es ist keine Installation notwendig.  
-Einfach im Browser öffnen und loslegen:
-
-🔗 **[Botaniq jetzt starten](https://deinlinkzurwebsite.com)**
-
----
-
-## 📬 Kontakt & Feedback
-
-Wenn du Fehler findest, neue Pflanzen vorschlagen möchtest oder Feedback hast, kannst du uns jederzeit über das Kontaktformular erreichen.
-
----
-
-© 2025 Botaniq – Alle Rechte vorbehalten.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
