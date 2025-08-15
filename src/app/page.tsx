@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import PlantCard from '@/components/PlantCard';
+import PlantCard, { Plant } from '@/components/PlantCard';
 import { usePlants } from '@/hooks/usePlants';
 import Hero from '@/components/Hero';
 
-const getMonthName = (monthIndex: number, long = false): string => {
+const getSeason = (monthIndex: number): string => {
   const monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
   const seasonMap: { [key: string]: string[] } = {
     Frühling: ["März", "April", "Mai"],
@@ -20,7 +20,7 @@ const getMonthName = (monthIndex: number, long = false): string => {
   return "Frühling"; // Default
 };
 
-const PlantSection = ({ title, plants }: { title: string; plants: any[] }) => {
+const PlantSection = ({ title, plants }: { title: string; plants: Plant[] }) => {
   const [visibleCount, setVisibleCount] = useState(4);
 
   const handleShowMore = () => {
@@ -59,16 +59,15 @@ export default function Home() {
   const { plants, loading, error } = usePlants();
 
   const { plantNowPlants, seasonalPlants, allPlants } = useMemo(() => {
-    const all: any[] = Array.isArray(plants) ? plants : [];
+    const all: Plant[] = Array.isArray(plants) ? plants : [];
 
-    const currentSeason = getMonthName(new Date().getMonth());
-    const currentMonthName = getMonthName(new Date().getMonth(), true);
+    const currentSeason = getSeason(new Date().getMonth());
 
     const plantNow = all.filter((p) => p.pflanzzeit?.includes(currentSeason));
-    const seasonal = all.filter((p) => p.bluehzeit?.includes(currentMonthName));
+    const seasonal = all.filter((p) => p.bluehzeit?.includes(currentSeason));
 
     // Ensure each section shows items; fallback to a slice of all plants if empty
-    const fallback = (arr: any[]) => (arr.length > 0 ? arr : all.slice(0, 8));
+    const fallback = (arr: Plant[]) => (arr.length > 0 ? arr : all.slice(0, 8));
 
     return {
       plantNowPlants: fallback(plantNow),

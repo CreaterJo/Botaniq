@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import Image from 'next/image';
 import ImageCarousel from '@/components/ImageCarousel';
 import { usePlants } from '@/hooks/usePlants';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -41,7 +40,7 @@ const PlantDetailPage = () => {
     return (
       <div className="text-center p-24">
         <h1 className="text-2xl font-bold">Pflanze nicht gefunden</h1>
-        <p className="text-brand-gray mt-2">Die Pflanze "{decodedName}" konnte nicht in unserer Datenbank gefunden werden.</p>
+        <p className="text-brand-gray mt-2">Die Pflanze &quot;{decodedName}&quot; konnte nicht in unserer Datenbank gefunden werden.</p>
         <Link href="/" className="mt-6 inline-block bg-brand-green text-white font-bold py-3 px-6 rounded-full hover:bg-emerald-600">
           Zurück zur Startseite
         </Link>

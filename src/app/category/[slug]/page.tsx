@@ -41,7 +41,7 @@ const CategoryPage = () => {
         </div>
       ) : (
         <div className="text-center text-brand-gray p-12 border-2 border-dashed rounded-lg">
-          <p>In der Kategorie "{decodedSlug}" wurden keine Pflanzen gefunden.</p>
+          <p>In der Kategorie &quot;{decodedSlug}&quot; wurden keine Pflanzen gefunden.</p>
         </div>
       )}
     </div>
