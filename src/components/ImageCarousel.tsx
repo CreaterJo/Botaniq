@@ -29,59 +29,40 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ latinName, remoteImages =
 		return [base, ...numbered];
 	}, [normalized, maxLocalImages]);
 
+	// Merge local candidates with any remote images while preserving order, and remove duplicates
 	const allCandidates = useMemo(() => {
 		const seen = new Set<string>();
 		const ordered: string[] = [];
-		for (const src of [...remoteImages, ...candidateLocalImages]) {
+		for (const src of [...candidateLocalImages, ...remoteImages]) {
 			if (src && !seen.has(src)) {
 				seen.add(src);
 				ordered.push(src);
 			}
 		}
-		return ordered;
+		return ordered.length > 0 ? ordered : [PLACEHOLDER];
 	}, [candidateLocalImages, remoteImages]);
 
-	const [validatedImages, setValidatedImages] = useState<string[]>([PLACEHOLDER]);
-	const [isValidating, setIsValidating] = useState<boolean>(true);
+	const [currentIndex, setCurrentIndex] = useState<number>(0);
+	const [currentSrc, setCurrentSrc] = useState<string>(allCandidates[0]);
 
 	useEffect(() => {
-		const validateImages = async () => {
-			const valid: string[] = [];
-			const promises = allCandidates.map(src => {
-				return new Promise<void>(resolve => {
-					const img = new window.Image();
-					img.src = src;
-					img.onload = () => {
-						valid.push(src);
-						resolve();
-					};
-					img.onerror = () => {
-						resolve();
-					};
-				});
-			});
-
-			await Promise.all(promises);
-
-			if (valid.length > 0) {
-				setValidatedImages(valid);
-			}
-			setIsValidating(false);
-		};
-
-		validateImages();
+		setCurrentIndex(0);
+		setCurrentSrc(allCandidates[0]);
 	}, [allCandidates]);
 
-	const [currentIndex, setCurrentIndex] = useState<number>(0);
-
 	const goNext = useCallback(() => {
-		setCurrentIndex((prev) => (prev + 1) % validatedImages.length);
-	}, [validatedImages.length]);
+		setCurrentIndex((prev) => (prev + 1) % allCandidates.length);
+	}, [allCandidates.length]);
 
 	const goPrev = useCallback(() => {
-		setCurrentIndex((prev) => (prev - 1 + validatedImages.length) % validatedImages.length);
-	}, [validatedImages.length]);
+		setCurrentIndex((prev) => (prev - 1 + allCandidates.length) % allCandidates.length);
+	}, [allCandidates.length]);
 
+	useEffect(() => {
+		setCurrentSrc(allCandidates[currentIndex]);
+	}, [currentIndex, allCandidates]);
+
+	// Keyboard navigation
 	useEffect(() => {
 		const handleKey = (e: KeyboardEvent) => {
 			if (e.key === 'ArrowRight') {
@@ -94,58 +75,46 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ latinName, remoteImages =
 		return () => window.removeEventListener('keydown', handleKey);
 	}, [goNext, goPrev]);
 
-	const currentSrc = validatedImages[currentIndex] || PLACEHOLDER;
-
-	if (isValidating) {
-		return (
-			<div className="w-full aspect-[4/3] rounded-lg bg-gray-100 flex items-center justify-center">
-				<p className="text-brand-gray">Bilder werden geladen...</p>
-			</div>
-		)
-	}
-
 	return (
 		<div className="w-full">
 			<div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
 				<Image
 					src={currentSrc}
-					alt={`${altBase} (${currentIndex + 1}/${validatedImages.length})`}
+					alt={`${altBase} (${currentIndex + 1}/${allCandidates.length})`}
 					fill
 					sizes="(max-width: 1024px) 100vw, 50vw"
 					style={{ objectFit: 'cover' }}
 					unoptimized
+					onError={() => {
+						setCurrentSrc(PLACEHOLDER);
+					}}
 				/>
-				{validatedImages.length > 1 && (
-					<>
-						<button
-							onClick={goPrev}
-							className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full"
-							aria-label="Vorheriges Bild"
-						>
-							&#10094;
-						</button>
-						<button
-							onClick={goNext}
-							className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full"
-							aria-label="Nächstes Bild"
-						>
-							&#10095;
-						</button>
-					</>
-				)}
+				<button
+					onClick={goPrev}
+					className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full"
+					aria-label="Vorheriges Bild"
+				>
+					&#10094;
+				</button>
+				<button
+					onClick={goNext}
+					className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full"
+					aria-label="Nächstes Bild"
+				>
+					&#10095;
+				</button>
 			</div>
-			{validatedImages.length > 1 && (
-				<div className="flex justify-center gap-2 mt-3">
-					{validatedImages.map((_, idx) => (
-						<button
-							key={idx}
-							onClick={() => setCurrentIndex(idx)}
-							className={`h-2 w-2 rounded-full ${idx === currentIndex ? 'bg-brand-green' : 'bg-gray-300'}`}
-							aria-label={`Gehe zu Bild ${idx + 1}`}
-						/>
-					))}
-				</div>
-			)}
+			{/* Dots */}
+			<div className="flex justify-center gap-2 mt-3">
+				{allCandidates.map((_, idx) => (
+					<button
+						key={idx}
+						onClick={() => setCurrentIndex(idx)}
+						className={`h-2 w-2 rounded-full ${idx === currentIndex ? 'bg-brand-green' : 'bg-gray-300'}`}
+						aria-label={`Gehe zu Bild ${idx + 1}`}
+					/>
+				))}
+			</div>
 		</div>
 	);
 };
