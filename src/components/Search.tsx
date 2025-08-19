@@ -45,7 +45,7 @@ const Search = () => {
         onChange={e => setQuery(e.target.value)}
         onFocus={() => setIsFocused(true)}
         placeholder="Pflanze suchen..."
-        className="w-full sm:w-64 px-4 py-2 text-gray-900 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-green"
+        className="w-full sm:w-64 px-4 py-2 text-gray-900 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-green border-2 border-brand-green"
       />
       {isFocused && results.length > 0 && (
         <div className="absolute mt-2 w-full sm:w-64 bg-white rounded-lg shadow-xl z-10">

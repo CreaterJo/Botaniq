@@ -1,7 +1,22 @@
-import React from 'react';
+"use client";
+
+import React, { useMemo } from 'react';
 import Link from 'next/link';
+import { usePlants } from '@/hooks/usePlants';
 
 const Footer = () => {
+  const { plants } = usePlants();
+
+  const categories = useMemo(() => {
+    const allCategories = new Set<string>();
+    plants.forEach(plant => {
+      if (plant.kategorie) {
+        allCategories.add(plant.kategorie);
+      }
+    });
+    return Array.from(allCategories).sort();
+  }, [plants]);
+
   return (
     <footer className="bg-white border-t border-gray-200 mt-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -20,20 +35,21 @@ const Footer = () => {
           {/* Right Section: Links */}
           <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">Pflanzen</h3>
+              <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">Navigation</h3>
               <ul className="mt-4 space-y-2">
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Alle Pflanzen</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Zimmerpflanzen</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Gartenpflanzen</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Kräuter</Link></li>
+                <li><Link href="/all-plants" className="text-base text-brand-gray hover:text-brand-green">Alle Pflanzen</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">Kategorien</h3>
               <ul className="mt-4 space-y-2">
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Bäume</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Sträucher</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Gräser & Farne</Link></li>
+                {categories.map(category => (
+                  <li key={category}>
+                    <Link href={`/category/${encodeURIComponent(category)}`} className="text-base text-brand-gray hover:text-brand-green">
+                      {category}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
