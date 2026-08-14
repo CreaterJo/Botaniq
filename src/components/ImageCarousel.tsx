@@ -57,7 +57,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ plant, altBase }) => {
       </div>
       {images.length > 1 && (
         <div className="flex justify-center gap-2 mt-3">
-          {images.map((_, idx) => (
+          {images.map((_img: string, idx: number) => (
             <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}

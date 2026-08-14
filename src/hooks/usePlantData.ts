@@ -160,24 +160,67 @@ const exportToStaticCache = useCallback((plants: Plant[]): void => {
 }, []);
 
 const loadFromStaticCache = useCallback(async (): Promise<Plant[] | null> => {
-  console.log('📁 Lade statischen Cache (intelligentes Laden)...');
-  
+  console.log('📁 Lade statischen Cache mit Lazy Loading...');
+
   try {
-    // ✅ ENTFERNE das Limit - lade ALLE Pflanzen
+    // STRATEGIE: Lade Teil 1 zuerst für schnellen Start, dann Rest im Hintergrund
+    const part1Response = await fetch('/data/cached_plants_part_1.json');
+
+    if (part1Response.ok) {
+      const part1Data = await part1Response.json();
+      const initialPlants = part1Data.plants || part1Data;
+
+      if (Array.isArray(initialPlants) && initialPlants.length > 0) {
+        console.log(`✅ ${initialPlants.length} Pflanzen aus Teil 1 geladen (schneller Start)`);
+
+        // Lade restliche Teile im Hintergrund
+        setTimeout(async () => {
+          console.log('📦 Lade restliche Cache-Teile im Hintergrund...');
+          const allPlants = [...initialPlants];
+
+          for (let i = 2; i <= 5; i++) {
+            try {
+              const partResponse = await fetch(`/data/cached_plants_part_${i}.json`);
+              if (partResponse.ok) {
+                const partData = await partResponse.json();
+                const plants = partData.plants || partData;
+                if (Array.isArray(plants) && plants.length > 0) {
+                  allPlants.push(...plants);
+                  console.log(`✅ Teil ${i} geladen: +${plants.length} Pflanzen (Total: ${allPlants.length})`);
+                  // Update State dynamisch
+                  setPlants(prev => [...prev, ...plants]);
+                }
+              }
+            } catch (err) {
+              console.log(`⚠️ Teil ${i} konnte nicht geladen werden`);
+            }
+          }
+
+          console.log(`🎉 Alle Cache-Teile geladen: ${allPlants.length} Pflanzen total`);
+          // Cache für nächstes Mal
+          cachePlants(allPlants);
+        }, 100);
+
+        return initialPlants;
+      }
+    }
+
+    // FALLBACK: Versuche komplette Datei
+    console.log('ℹ️ Teil-Dateien nicht gefunden, versuche cached_plants.json...');
     const response = await fetch('/data/cached_plants.json');
     if (response.ok) {
       const data = await response.json();
       const plantsArray = data.plants || data;
-      
+
       if (Array.isArray(plantsArray) && plantsArray.length > 0) {
         console.log(`✅ ${plantsArray.length} Pflanzen aus cached_plants.json geladen`);
-        return plantsArray; // ✅ KEIN slice mehr - alle Pflanzen!
+        return plantsArray;
       }
     }
   } catch (error) {
-    console.log('ℹ️  cached_plants.json nicht verfügbar');
+    console.log('ℹ️ Statische Cache-Dateien nicht verfügbar');
   }
-  
+
   return null;
 }, []);
 
@@ -236,7 +279,7 @@ const loadAllTreflePages = useCallback(async (): Promise<any[]> => {
       // Erstelle alle Requests für diesen Batch
       for (let page = batchStart; page <= batchEnd; page++) {
         batchPromises.push(
-          fetch(`/data/plants_page_${page}.json`)
+          fetch(`/data/data/plants_page_${page}.json`)
             .then(response => response.ok ? response.json() : null)
             .catch(() => null)
         );
@@ -823,11 +866,52 @@ useEffect(() => {
         return;
       }
 
-      // 3. KEINE DATEN GEFUNDEN - FEHLER
-      console.log('❌ KEINE CACHE-DATEIEN GEFUNDEN');
-      setError('❌ Pflanzen-Datenbank nicht verfügbar. Bitte Cache-Dateien installieren.');
-      setPlants([]);
-      
+      // 3. KEINE DATEN GEFUNDEN - STARTE AUTO-DOWNLOAD
+      console.log('⚠️ Keine Cache-Dateien gefunden - starte automatischen Download...');
+      setError('🔄 Pflanzen-Datenbank wird initialisiert... Dies kann beim ersten Start 10-30 Minuten dauern.');
+
+      try {
+        // Schritt 1: Lade alle plants_page_*.json Dateien
+        console.log('📥 Lade alle Pflanzenseiten...');
+        setCleaningProgress(5);
+        const rawPlants = await loadAllTreflePages();
+
+        if (rawPlants.length === 0) {
+          setError('❌ Keine Pflanzendaten gefunden. Bitte überprüfen Sie die plants_page_*.json Dateien.');
+          setPlants([]);
+          setLoading(false);
+          return;
+        }
+
+        console.log(`✅ ${rawPlants.length} rohe Pflanzen geladen`);
+        setCleaningProgress(40);
+
+        // Schritt 2: Bereinige und kategorisiere Daten
+        console.log('🧹 Bereinige und kategorisiere Daten...');
+        const cleaningResult = await cleanAllPlants(rawPlants);
+        const cleanedPlants = cleaningResult.plants;
+        setCleaningProgress(95);
+        setEnhancementProgress(95);
+
+        console.log(`🎉 ${cleanedPlants.length} Pflanzen erfolgreich verarbeitet`);
+
+        // Schritt 3: Speichere in localStorage
+        setPlants(cleanedPlants);
+        cachePlants(cleanedPlants);
+
+        // Schritt 5: Optional - Exportiere für zukünftige Nutzung
+        console.log('💾 Daten wurden im localStorage gespeichert');
+        setCleaningProgress(100);
+        setEnhancementProgress(100);
+        setAllPlantsLoaded(true);
+        setError(null);
+
+      } catch (downloadErr) {
+        console.error('❌ Auto-Download fehlgeschlagen:', downloadErr);
+        setError('❌ Fehler beim automatischen Download der Pflanzen-Datenbank. Bitte versuchen Sie es später erneut.');
+        setPlants([]);
+      }
+
     } catch (err) {
       console.log('❌ Fehler beim Laden:', err);
       setError('❌ Fehler beim Laden der Pflanzen-Datenbank');
@@ -838,7 +922,7 @@ useEffect(() => {
   };
 
   fetchPlants();
-}, [loadFromStaticCache, getCachedPlants]); // ✅ KEINE KI-Funktionen mehr!
+}, [loadFromStaticCache, getCachedPlants, loadAllTreflePages, cleanAllPlants, comprehensiveTranslate, ruleBasedCategorization, cachePlants]);
 
 return { 
     plants, 
