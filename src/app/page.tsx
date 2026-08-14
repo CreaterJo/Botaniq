@@ -1,81 +1,54 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import PlantCard from '@/components/PlantCard';
 import { usePlants } from '@/hooks/usePlants';
 import Hero from '@/components/Hero';
+import Link from 'next/link';
 
-const getMonthName = (monthIndex: number, long = false): string => {
-  const monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
-  const seasonMap: { [key: string]: string[] } = {
-    Frühling: ["März", "April", "Mai"],
-    Sommer: ["Juni", "Juli", "August"],
-    Herbst: ["September", "Oktober", "November"],
-    Winter: ["Dezember", "Januar", "Februar"],
-  };
-  const currentMonth = monthNames[monthIndex];
-  for (const season in seasonMap) {
-    if (seasonMap[season].includes(currentMonth)) return season;
-  }
-  return "Frühling"; // Default
-};
-
-const PlantSection = ({ title, plants }: { title: string; plants: any[] }) => {
-  const [visibleCount, setVisibleCount] = useState(4);
+const PlantSection = ({ title, plants, viewAllLink }: { title: string; plants: any[]; viewAllLink?: string }) => {
+  const [visibleCount, setVisibleCount] = useState(12);
 
   const handleShowMore = () => {
-    setVisibleCount((prev) => prev + 4);
+    setVisibleCount((prev) => prev + 12);
   };
 
   const canShowMore = visibleCount < plants.length;
 
   return (
     <section className="mb-16">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6">{title}</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold text-gray-800">{title}</h2>
+        {viewAllLink && (
+          <Link 
+            href={viewAllLink} 
+            className="text-brand-green hover:text-emerald-600 font-semibold"
+          >
+            Alle anzeigen →
+          </Link>
+        )}
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {plants.slice(0, visibleCount).map((plant, index) => (
           <PlantCard key={plant.id ?? `${plant.name}-${index}`} plant={plant} />
         ))}
       </div>
-      <div className="text-center mt-12">
-        <button
-          onClick={handleShowMore}
-          disabled={!canShowMore}
-          className={`font-bold py-3 px-8 rounded-full transition-colors ${
-            canShowMore
-              ? 'bg-brand-green text-white hover:bg-emerald-600'
-              : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          Mehr anzeigen
-        </button>
-      </div>
+      {canShowMore && (
+        <div className="text-center mt-8">
+          <button
+            onClick={handleShowMore}
+            className="bg-brand-green text-white font-bold py-3 px-8 rounded-full hover:bg-emerald-600 transition-colors"
+          >
+            Mehr anzeigen
+          </button>
+        </div>
+      )}
     </section>
   );
 };
 
-
 export default function Home() {
   const { plants, loading, error } = usePlants();
-
-  const { plantNowPlants, seasonalPlants, allPlants } = useMemo(() => {
-    const all: any[] = Array.isArray(plants) ? plants : [];
-
-    const currentSeason = getMonthName(new Date().getMonth());
-    const currentMonthName = getMonthName(new Date().getMonth(), true);
-
-    const plantNow = all.filter((p) => p.pflanzzeit?.includes(currentSeason));
-    const seasonal = all.filter((p) => p.bluehzeit?.includes(currentMonthName));
-
-    // Ensure each section shows items; fallback to a slice of all plants if empty
-    const fallback = (arr: any[]) => (arr.length > 0 ? arr : all.slice(0, 8));
-
-    return {
-      plantNowPlants: fallback(plantNow),
-      seasonalPlants: fallback(seasonal),
-      allPlants: all,
-    };
-  }, [plants]);
 
   if (loading) {
     return <div className="text-center p-24">Lade Pflanzen...</div>;
@@ -88,10 +61,14 @@ export default function Home() {
   return (
     <>
       <Hero />
+      
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <PlantSection title="Jetzt pflanzen" plants={plantNowPlants} />
-        <PlantSection title="Blüht in dieser Saison" plants={seasonalPlants} />
-        <PlantSection title="Alle Pflanzen entdecken" plants={allPlants} />
+        {/* NUR ALLE PFLANZEN - nichts anderes */}
+        <PlantSection 
+          title="🌿 Alle Pflanzen" 
+          plants={plants}
+          viewAllLink="/all-plants"
+        />
       </div>
     </>
   );

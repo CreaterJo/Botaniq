@@ -5,50 +5,66 @@ const Footer = () => {
   return (
     <footer className="bg-white border-t border-gray-200 mt-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-          {/* Left Section: Logo and Tagline */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          
+          {/* Brand Section */}
           <div className="md:col-span-1">
-            <h2 className="text-3xl font-bold text-brand-green">
-              Botaniq
-            </h2>
-            <p className="mt-2 text-brand-gray max-w-xs">
-              Deine moderne Pflanzen-Referenz mit über 250 detaillierten Pflanzenporträts und Pflegeanleitungen. Kostenlos und wissenschaftlich fundiert.
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-6 h-6 bg-brand-green rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-xs">B</span>
+              </div>
+              <h2 className="text-xl font-bold text-brand-green">Botaniq</h2>
+            </div>
+            <p className="text-brand-gray text-sm max-w-xs">
+              Deine moderne Pflanzen-Referenz mit KI-unterstützter Datenbereinigung und übersichtlicher Navigation.
             </p>
           </div>
 
-          {/* Right Section: Links */}
-          <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">Pflanzen</h3>
-              <ul className="mt-4 space-y-2">
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Alle Pflanzen</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Zimmerpflanzen</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Gartenpflanzen</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Kräuter</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">Kategorien</h3>
-              <ul className="mt-4 space-y-2">
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Bäume</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Sträucher</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Gräser & Farne</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">Rechtliches</h3>
-              <ul className="mt-4 space-y-2">
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Impressum</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Datenschutz</Link></li>
-                <li><Link href="#" className="text-base text-brand-gray hover:text-brand-green">Quellen</Link></li>
-              </ul>
-            </div>
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
+              Pflanzen
+            </h3>
+            <ul className="space-y-2">
+              <li><Link href="/all-plants" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Alle Pflanzen</Link></li>
+              <li><Link href="/blooming" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Blühende Pflanzen</Link></li>
+              <li><Link href="/families" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Nach Familien</Link></li>
+            </ul>
           </div>
 
+          {/* Categories */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
+              Entdecken
+            </h3>
+            <ul className="space-y-2">
+              <li><Link href="/families" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Pflanzenfamilien</Link></li>
+              <li><Link href="/blooming" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Saisonale Pflanzen</Link></li>
+              <li><Link href="/all-plants" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Vollständige Liste</Link></li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
+              Informationen
+            </h3>
+            <ul className="space-y-2">
+              <li><Link href="#" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Impressum</Link></li>
+              <li><Link href="#" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Datenschutz</Link></li>
+              <li><Link href="/about" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Über Botaniq</Link></li>
+            </ul>
+          </div>
         </div>
+
+        {/* Bottom Bar */}
         <div className="mt-12 border-t border-gray-200 pt-8 text-center">
-          <p className="text-base text-brand-gray">&copy; {new Date().getFullYear()} Botaniq. Alle Rechte vorbehalten.</p>
+          <p className="text-sm text-brand-gray">
+            &copy; {new Date().getFullYear()} Botaniq. Mit ❤️ für Pflanzen gemacht.
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            Datenquelle: Trefle API • KI-Bereinigung aktiv
+          </p>
         </div>
       </div>
     </footer>

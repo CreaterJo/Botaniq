@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import Image from 'next/image';
 import ImageCarousel from '@/components/ImageCarousel';
 import { usePlants } from '@/hooks/usePlants';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -13,9 +12,7 @@ const PlantDetailPage = () => {
   const { plants, loading, error } = usePlants();
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
 
-  // Decode the plant name from the URL
-  const decodedName = decodeURIComponent(name);
-
+  const decodedName = decodeURIComponent(name as string);
   const plant = plants.find(p => p.name === decodedName);
   const isCurrentlyFavorite = plant ? isFavorite(plant.name) : false;
 
@@ -27,7 +24,6 @@ const PlantDetailPage = () => {
       addFavorite(plant.name);
     }
   };
-
 
   if (loading) {
     return <div className="text-center p-24">Lade Pflanzendetails...</div>;
@@ -41,7 +37,7 @@ const PlantDetailPage = () => {
     return (
       <div className="text-center p-24">
         <h1 className="text-2xl font-bold">Pflanze nicht gefunden</h1>
-        <p className="text-brand-gray mt-2">Die Pflanze "{decodedName}" konnte nicht in unserer Datenbank gefunden werden.</p>
+        <p className="text-brand-gray mt-2">Die Pflanze &quot;{decodedName}&quot; konnte nicht in unserer Datenbank gefunden werden.</p>
         <Link href="/" className="mt-6 inline-block bg-brand-green text-white font-bold py-3 px-6 rounded-full hover:bg-emerald-600">
           Zurück zur Startseite
         </Link>
@@ -53,7 +49,7 @@ const PlantDetailPage = () => {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         {/* Image Section */}
-        <ImageCarousel latinName={plant.name} remoteImages={plant.bilder} altBase={`Bild von ${plant.deutscherName}`} />
+        <ImageCarousel plant={plant} altBase={`Bild von ${plant.deutscherName}`} />
 
         {/* Details Section */}
         <div>
