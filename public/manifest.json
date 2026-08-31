@@ -1,0 +1,71 @@
+{
+  "name": "Botaniq - Pflanzenreferenz",
+  "short_name": "Botaniq",
+  "description": "Entdecke und pflege deine Pflanzen mit Botaniq - Die umfassende Pflanzen-App mit über 20.000 Arten",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0f9f4",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["education", "lifestyle", "utilities"],
+  "screenshots": [
+    {
+      "src": "/screenshot-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide"
+    },
+    {
+      "src": "/screenshot-2.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "platform": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Alle Pflanzen",
+      "short_name": "Pflanzen",
+      "description": "Durchsuche alle verfügbaren Pflanzen",
+      "url": "/all-plants",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Kategorien",
+      "short_name": "Kategorien",
+      "description": "Browse nach Pflanzenkategorien",
+      "url": "/families",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
