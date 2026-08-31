@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code worktrees (build artifacts)
+.claude/worktrees/
+
+# Large data files — move to Cloudflare R2 (see project notes)
+public/data/
+public/data/data/
