@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Plant } from '@/components/PlantCard';
 import { usePlantCleaner } from './usePlantCleaner';
 import { PlantAIHelper } from '@/lib/plantAiHelper';
+import { CDN_BASE_URL } from '@/lib/dataConfig';
 const ENHANCED_PLANTS_KEY = 'botaniq_ki_enhanced_plants';
 const CACHE_VERSION = 'v4';
 interface PlantCompletion {
@@ -164,7 +165,8 @@ const loadFromStaticCache = useCallback(async (): Promise<Plant[] | null> => {
 
   try {
     // STRATEGIE: Lade Teil 1 zuerst für schnellen Start, dann Rest im Hintergrund
-    const part1Response = await fetch('/data/cached_plants_part_1.json');
+    const part1Url = CDN_BASE_URL ? `${CDN_BASE_URL}/cached_plants_part_1.json` : '/data/cached_plants_part_1.json';
+    const part1Response = await fetch(part1Url);
 
     if (part1Response.ok) {
       const part1Data = await part1Response.json();
@@ -180,7 +182,8 @@ const loadFromStaticCache = useCallback(async (): Promise<Plant[] | null> => {
 
           for (let i = 2; i <= 5; i++) {
             try {
-              const partResponse = await fetch(`/data/cached_plants_part_${i}.json`);
+              const partUrl = CDN_BASE_URL ? `${CDN_BASE_URL}/cached_plants_part_${i}.json` : `/data/cached_plants_part_${i}.json`;
+              const partResponse = await fetch(partUrl);
               if (partResponse.ok) {
                 const partData = await partResponse.json();
                 const plants = partData.plants || partData;
@@ -207,7 +210,8 @@ const loadFromStaticCache = useCallback(async (): Promise<Plant[] | null> => {
 
     // FALLBACK: Versuche komplette Datei
     console.log('ℹ️ Teil-Dateien nicht gefunden, versuche cached_plants.json...');
-    const response = await fetch('/data/cached_plants.json');
+    const fullUrl = CDN_BASE_URL ? `${CDN_BASE_URL}/cached_plants.json` : '/data/cached_plants.json';
+    const response = await fetch(fullUrl);
     if (response.ok) {
       const data = await response.json();
       const plantsArray = data.plants || data;
@@ -279,7 +283,7 @@ const loadAllTreflePages = useCallback(async (): Promise<any[]> => {
       // Erstelle alle Requests für diesen Batch
       for (let page = batchStart; page <= batchEnd; page++) {
         batchPromises.push(
-          fetch(`/data/data/plants_page_${page}.json`)
+          fetch(CDN_BASE_URL ? `${CDN_BASE_URL}/data/plants_page_${page}.json` : `/data/data/plants_page_${page}.json`)
             .then(response => response.ok ? response.json() : null)
             .catch(() => null)
         );
