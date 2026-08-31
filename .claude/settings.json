@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude plugins list *)",
+      "Bash(claude plugins marketplace list *)",
+      "Bash(gh search repos *)",
+      "Bash(npm view *)",
+      "Bash(npm search *)"
+    ]
+  }
+}
