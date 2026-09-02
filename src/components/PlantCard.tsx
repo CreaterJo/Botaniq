@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import type { ImageSource } from '@/lib/apiSync';
+
 export interface Plant {
   name: string;
   deutscherName: string;
@@ -16,6 +18,7 @@ export interface Plant {
   besonderheiten: string;
   pflegeaufwand: string;
   bilder: string[];
+  bilderQuellen?: ImageSource[];
   id?: string;
   kategorie?: string;
   unterkategorie?: string;

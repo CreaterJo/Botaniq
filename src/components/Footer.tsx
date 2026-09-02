@@ -1,69 +1,89 @@
+"use client";
+
 import React from 'react';
 import Link from 'next/link';
+import { usePlants } from '@/hooks/usePlants';
 
 const Footer = () => {
+  const { plants, loading, lastSync } = usePlants();
+
+  const plantCount = plants?.length ?? 0;
+
   return (
-    <footer className="bg-white border-t border-gray-200 mt-24">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="bg-white border-t border-gray-100 mt-auto">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          
-          {/* Brand Section */}
+
+          {/* Brand */}
           <div className="md:col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-6 h-6 bg-brand-green rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xs">B</span>
+            <Link href="/" className="flex items-center space-x-2 mb-3">
+              <div className="w-7 h-7 bg-emerald-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm">B</span>
               </div>
-              <h2 className="text-xl font-bold text-brand-green">Botaniq</h2>
-            </div>
-            <p className="text-brand-gray text-sm max-w-xs">
-              Deine moderne Pflanzen-Referenz mit KI-unterstützter Datenbereinigung und übersichtlicher Navigation.
+              <span className="text-xl font-bold text-emerald-700">Botaniq</span>
+            </Link>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Pflanzenreferenz mit KI-unterstutzter Datenbereinigung.
+              {plantCount > 0 && (
+                <span> {plantCount.toLocaleString('de-DE')} Arten geladen.</span>
+              )}
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Navigation */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Pflanzen
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+              Navigation
             </h3>
             <ul className="space-y-2">
-              <li><Link href="/all-plants" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Alle Pflanzen</Link></li>
-              <li><Link href="/blooming" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Blühende Pflanzen</Link></li>
-              <li><Link href="/families" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Nach Familien</Link></li>
+              <li><Link href="/all-plants" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Alle Pflanzen</Link></li>
+              <li><Link href="/blooming" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Bluhende Pflanzen</Link></li>
+              <li><Link href="/families" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Nach Familien</Link></li>
+              <li><Link href="/about" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Uber Botaniq</Link></li>
             </ul>
           </div>
 
-          {/* Categories */}
+          {/* Daten */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Entdecken
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+              Datenquellen
             </h3>
             <ul className="space-y-2">
-              <li><Link href="/families" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Pflanzenfamilien</Link></li>
-              <li><Link href="/blooming" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Saisonale Pflanzen</Link></li>
-              <li><Link href="/all-plants" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Vollständige Liste</Link></li>
+              <li className="text-sm text-gray-600">Trefle API (GBIF + iNaturalist)</li>
+              <li className="text-sm text-gray-500">
+                {loading
+                  ? 'Lade Daten…'
+                  : plantCount > 0
+                    ? `${plantCount.toLocaleString('de-DE')} Pflanzen`
+                    : 'Keine Daten geladen'}
+              </li>
+              {lastSync && (
+                <li className="text-xs text-gray-400">
+                  Zuletzt aktualisiert: {new Date(lastSync).toLocaleDateString('de-DE')}
+                </li>
+              )}
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Rechtliches */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Informationen
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+              Rechtliches
             </h3>
             <ul className="space-y-2">
-              <li><Link href="#" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Impressum</Link></li>
-              <li><Link href="#" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Datenschutz</Link></li>
-              <li><Link href="/about" className="text-sm text-brand-gray hover:text-brand-green transition-colors">Über Botaniq</Link></li>
+              <li><Link href="/impressum" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Impressum</Link></li>
+              <li><Link href="/datenschutz" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Datenschutz</Link></li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-12 border-t border-gray-200 pt-8 text-center">
-          <p className="text-sm text-brand-gray">
-            &copy; {new Date().getFullYear()} Botaniq. Mit ❤️ für Pflanzen gemacht.
+        {/* Divider */}
+        <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-2">
+          <p className="text-xs text-gray-400">
+            © {new Date().getFullYear()} Botaniq — Pflanzenreferenz
           </p>
-          <p className="text-xs text-gray-500 mt-1">
-            Datenquelle: Trefle API • KI-Bereinigung aktiv
+          <p className="text-xs text-gray-400">
+            Daten: Trefle API · Bereinigung: KI (Local AI Helper)
           </p>
         </div>
       </div>

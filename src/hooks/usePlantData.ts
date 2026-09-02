@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Plant } from '@/components/PlantCard';
 import { usePlantCleaner } from './usePlantCleaner';
 import { PlantAIHelper } from '@/lib/plantAiHelper';
+import { getLastSyncTimestamp } from '@/lib/apiSync';
 import { CDN_BASE_URL } from '@/lib/dataConfig';
 const ENHANCED_PLANTS_KEY = 'botaniq_ki_enhanced_plants';
 const CACHE_VERSION = 'v4';
@@ -25,6 +26,7 @@ const [error, setError] = useState<string | null>(null);
 const [cleaningProgress, setCleaningProgress] = useState<number>(0);
 const [enhancementProgress, setEnhancementProgress] = useState<number>(0);
 const [allPlantsLoaded, setAllPlantsLoaded] = useState<boolean>(false);
+const [lastSync, setLastSync] = useState<Date | null>(null);
 const { cleanAllPlants, getCachedCleanedData } = usePlantCleaner();
 
 const exportToStaticCache = useCallback((plants: Plant[]): void => {
@@ -928,13 +930,18 @@ useEffect(() => {
   fetchPlants();
 }, [loadFromStaticCache, getCachedPlants, loadAllTreflePages, cleanAllPlants, comprehensiveTranslate, ruleBasedCategorization, cachePlants]);
 
-return { 
-    plants, 
-    loading, 
-    error, 
+useEffect(() => {
+  setLastSync(getLastSyncTimestamp());
+}, []);
+
+return {
+    plants,
+    loading,
+    error,
     cleaningProgress,
     enhancementProgress,
     allPlantsLoaded,
-    refreshPlants 
+    lastSync,
+    refreshPlants
   };
 };

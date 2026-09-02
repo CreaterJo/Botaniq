@@ -43,6 +43,10 @@ next-env.d.ts
 # Claude Code worktrees (build artifacts)
 .claude/worktrees/
 
+# Graphify (code analysis output — stored in Obsidian vault instead)
+.graphify/
+src/.graphify/
+
 # Large data files — move to Cloudflare R2 (see project notes)
 public/data/
 public/data/data/

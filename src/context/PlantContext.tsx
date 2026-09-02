@@ -11,6 +11,7 @@ interface PlantContextType {
   cleaningProgress: number;
   enhancementProgress: number;
   allPlantsLoaded: boolean;
+  lastSync: Date | null;
   refreshPlants: () => void;
 }
 
@@ -21,6 +22,7 @@ export const PlantContext = createContext<PlantContextType>({
   cleaningProgress: 0,
   enhancementProgress: 0,
   allPlantsLoaded: false,
+  lastSync: null,
   refreshPlants: () => {},
 });
 

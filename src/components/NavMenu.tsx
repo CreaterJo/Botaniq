@@ -120,20 +120,20 @@ const NavMenu = () => {
 
                 <div className="space-y-6">
                   {/* Hauptnavigation */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Link 
-                      href="/all-plants" 
-                      className="flex items-center justify-center p-6 bg-brand-green-light rounded-xl text-brand-green hover:bg-brand-green hover:text-white transition-colors text-lg font-semibold"
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Link
+                      href="/all-plants"
+                      className="flex items-center justify-center p-5 bg-brand-green-light rounded-xl text-brand-green hover:bg-brand-green hover:text-white transition-colors text-lg font-semibold"
                       onClick={toggleMenu}
                     >
-                      🌿 Alle Pflanzen Anzeigen
+                      🌿 Alle Pflanzen
                     </Link>
-                    <Link 
-                      href="/blooming" 
-                      className="flex items-center justify-center p-6 bg-brand-green-light rounded-xl text-brand-green hover:bg-brand-green hover:text-white transition-colors text-lg font-semibold"
+                    <Link
+                      href="/blooming"
+                      className="flex items-center justify-center p-5 bg-brand-green-light rounded-xl text-brand-green hover:bg-brand-green hover:text-white transition-colors text-lg font-semibold"
                       onClick={toggleMenu}
                     >
-                      🌸 Aktuell Blühende Pflanzen
+                      🌸 Blühende Pflanzen
                     </Link>
                   </div>
 
