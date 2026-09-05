@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import NavMenu from './NavMenu';
 import CleaningStatus from './CleaningStatus';
+import UserHeader from './UserHeader';
 
 const Header = () => {
   return (
@@ -24,12 +25,13 @@ const Header = () => {
             {/* Navigation Menu */}
             <div className="flex items-center space-x-4">
               <NavMenu />
+              <UserHeader />
             </div>
           </div>
         </div>
       </header>
-      
-      {/* Cleaning Status - wird nur angezeigt wenn aktiv */}
+
+      {/* Cleaning Status */}
       <CleaningStatus />
     </>
   );

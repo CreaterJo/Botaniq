@@ -1,28 +1,36 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import ImageCarousel from '@/components/ImageCarousel';
 import { usePlants } from '@/hooks/usePlants';
-import { useFavorites } from '@/hooks/useFavorites';
+import { useSupabasePlants } from '@/hooks/useSupabasePlants';
 import Link from 'next/link';
 
 const PlantDetailPage = () => {
   const { name } = useParams<{ name: string }>();
   const { plants, loading, error } = usePlants();
-  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
+  const { getPlantById } = useSupabasePlants();
+  const { toggleFavorite, isFavorite } = usePlants();
 
   const decodedName = decodeURIComponent(name as string);
   const plant = plants.find(p => p.name === decodedName);
-  const isCurrentlyFavorite = plant ? isFavorite(plant.name) : false;
+  const [isCurrentlyFavorite, setIsCurrentlyFavorite] = useState(false);
 
-  const handleFavoriteToggle = () => {
-    if (!plant) return;
-    if (isCurrentlyFavorite) {
-      removeFavorite(plant.name);
-    } else {
-      addFavorite(plant.name);
+  useEffect(() => {
+    if (plant) {
+      const check = async () => {
+        const fav = await isFavorite(plant.name);
+        setIsCurrentlyFavorite(fav);
+      };
+      check();
     }
+  }, [plant, isFavorite]);
+
+  const handleFavoriteToggle = async () => {
+    if (!plant) return;
+    await toggleFavorite(plant.name, plant.id || plant.name);
+    setIsCurrentlyFavorite(prev => !prev);
   };
 
   if (loading) {

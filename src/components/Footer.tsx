@@ -38,6 +38,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><Link href="/all-plants" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Alle Pflanzen</Link></li>
               <li><Link href="/blooming" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Bluhende Pflanzen</Link></li>
+              <li><Link href="/favorites" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Meine Favoriten</Link></li>
               <li><Link href="/families" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Nach Familien</Link></li>
               <li><Link href="/about" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Uber Botaniq</Link></li>
             </ul>

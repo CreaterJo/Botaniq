@@ -135,6 +135,13 @@ const NavMenu = () => {
                     >
                       🌸 Blühende Pflanzen
                     </Link>
+                    <Link
+                      href="/favorites"
+                      className="flex items-center justify-center p-5 bg-brand-pink-light rounded-xl text-brand-pink hover:bg-brand-pink hover:text-white transition-colors text-lg font-semibold"
+                      onClick={toggleMenu}
+                    >
+                      ❤️ Meine Favoriten
+                    </Link>
                   </div>
 
                   {/* KI-Kategorien */}

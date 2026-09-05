@@ -6,19 +6,23 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate": "tsx scripts/migrate-to-supabase.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.115.0",
     "framer-motion": "^10.16.4",
     "next": "^14.2.33",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "reactflow": "^11.11.4"
+    "reactflow": "^11.11.4",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "@types/uuid": "^9.0.8",
     "autoprefixer": "^10.0.1",
     "baseline-browser-mapping": "^2.11.14",
     "eslint": "^8.0.0",
