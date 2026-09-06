@@ -41,14 +41,15 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   username TEXT NOT NULL UNIQUE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  last_login TIMESTAMPTZ DEFAULT NOW()
+  last_seen TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- User Favorites (Private Favoriten pro User)
-CREATE TABLE IF NOT EXISTS user_favorites (
+CREATE TABLE IF NOT EXISTS favorites (
   id SERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
   plant_id TEXT NOT NULL REFERENCES plants(id) ON DELETE CASCADE,
+  plant_name TEXT NOT NULL DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, plant_id)
 );
@@ -69,7 +70,8 @@ CREATE INDEX IF NOT EXISTS idx_plants_familie ON plants (familie);
 
 -- Fremdschlüssel Indizes
 CREATE INDEX IF NOT EXISTS idx_plant_images_plant_id ON plant_images (plant_id);
-CREATE INDEX IF NOT EXISTS idx_user_favorites_user_id ON user_favorites (user_id);
+CREATE INDEX IF NOT EXISTS idx_favorites_user_id ON favorites (user_id);
+CREATE INDEX IF NOT EXISTS idx_favorites_plant_id ON favorites (plant_id);
 
 -- =====================================================
 -- ROW LEVEL SECURITY (RLS)
@@ -99,14 +101,14 @@ CREATE POLICY "User erstellt Profil" ON user_profiles
 CREATE POLICY "User aktualisiert eigenes Profil" ON user_profiles
   FOR UPDATE USING (auth.uid() = id);
 
--- User Favorites: Nur der User sieht seine eigenen Favoriten
-CREATE POLICY "User sieht eigene Favoriten" ON user_favorites
+-- Favorites: Nur der User sieht seine eigenen Favoriten
+CREATE POLICY "User sieht eigene Favoriten" ON favorites
   FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "User erstellt Favoriten" ON user_favorites
+CREATE POLICY "User erstellt Favoriten" ON favorites
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "User löscht eigene Favoriten" ON user_favorites
+CREATE POLICY "User löscht eigene Favoriten" ON favorites
   FOR DELETE USING (auth.uid() = user_id);
 
 -- =====================================================

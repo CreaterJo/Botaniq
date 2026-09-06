@@ -11,7 +11,7 @@ async function validateSetup() {
 
   // 1. Check tables exist
   console.log('1. Checking tables...')
-  const tables = ['plants', 'plant_images', 'user_profiles', 'user_favorites']
+  const tables = ['plants', 'plant_images', 'user_profiles', 'favorites']
 
   for (const table of tables) {
     const { data, error } = await supabase
@@ -35,7 +35,7 @@ async function validateSetup() {
   // 3. Check RLS enabled
   console.log('\n3. Checking RLS (via SQL)...')
   console.log('   Run in SQL Editor:')
-  console.log('   SELECT relname, relrowsecurity FROM pg_class WHERE relname IN (\'plants\', \'plant_images\', \'user_profiles\', \'user_favorites\');')
+  console.log('   SELECT relname, relrowsecurity FROM pg_class WHERE relname IN (\'plants\', \'plant_images\', \'user_profiles\', \'favorites\');')
 
   // 4. Test insert/query
   console.log('\n4. Testing basic operations...')
