@@ -11,14 +11,15 @@
 ### 1. SQL Schema ausführen
 
 1. Öffne den **Supabase SQL Editor**: https://supabase.com/dashboard/project/yagiqadbqdufpzapdrvc/sql/new
-2. Kopiere den Inhalt aus `supabase/migrations/20260902141500_botaniq_schema.sql`
+2. Kopiere den Inhalt aus `src/lib/supabase/schema-to-execute.sql`
 3. Füge ihn ein und klicke **Run**
 
 Alternativ - kopiere das komplette SQL:
 
 ```sql
 -- Botaniq Supabase Schema
--- Migration: 20260902141500_botaniq_schema.sql
+-- Führe dieses SQL im Supabase SQL Editor aus:
+-- https://supabase.com/dashboard/project/yagiqadbqdufpzapdrvc/sql/new
 
 -- =====================================================
 -- TABLES
@@ -50,7 +51,7 @@ CREATE TABLE IF NOT EXISTS plant_images (
   id SERIAL PRIMARY KEY,
   plant_id TEXT NOT NULL REFERENCES plants(id) ON DELETE CASCADE,
   url TEXT NOT NULL,
-  source TEXT DEFAULT 'GBIF',
+  source TEXT DEFAULT 'GBIF', -- 'GBIF', 'iNaturalist', 'Storage'
   sort_order INT DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -60,53 +61,81 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   username TEXT NOT NULL UNIQUE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  last_login TIMESTAMPTZ DEFAULT NOW()
+  last_seen TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- User Favorites (Private Favoriten pro User)
-CREATE TABLE IF NOT EXISTS user_favorites (
+CREATE TABLE IF NOT EXISTS favorites (
   id SERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
   plant_id TEXT NOT NULL REFERENCES plants(id) ON DELETE CASCADE,
+  plant_name TEXT NOT NULL DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, plant_id)
 );
 
 -- =====================================================
--- INDIZES
+-- INDIZES (Full-Text Search & Performance)
 -- =====================================================
 
+-- Full-Text Search Indizes für plants
 CREATE INDEX IF NOT EXISTS idx_plants_name_gin ON plants USING gin (to_tsvector('german', coalesce(name, '')));
 CREATE INDEX IF NOT EXISTS idx_plants_deutscher_name_gin ON plants USING gin (to_tsvector('german', coalesce(deutscher_name, '')));
 CREATE INDEX IF NOT EXISTS idx_plants_familie_gin ON plants USING gin (to_tsvector('german', coalesce(familie, '')));
+
+-- B-tree Indizes für Filter-Queries
 CREATE INDEX IF NOT EXISTS idx_plants_kategorie ON plants (kategorie);
 CREATE INDEX IF NOT EXISTS idx_plants_unterkategorie ON plants (unterkategorie);
 CREATE INDEX IF NOT EXISTS idx_plants_familie ON plants (familie);
+
+-- Fremdschlüssel Indizes
 CREATE INDEX IF NOT EXISTS idx_plant_images_plant_id ON plant_images (plant_id);
-CREATE INDEX IF NOT EXISTS idx_user_favorites_user_id ON user_favorites (user_id);
+CREATE INDEX IF NOT EXISTS idx_favorites_user_id ON favorites (user_id);
+CREATE INDEX IF NOT EXISTS idx_favorites_plant_id ON favorites (plant_id);
 
 -- =====================================================
 -- ROW LEVEL SECURITY (RLS)
 -- =====================================================
 
+-- RLS aktivieren
 ALTER TABLE plants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE plant_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE user_favorites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Plants sind öffentlich lesbar" ON plants FOR SELECT USING (true);
-CREATE POLICY "Plant Images sind öffentlich lesbar" ON plant_images FOR SELECT USING (true);
-CREATE POLICY "User liest eigenes Profil" ON user_profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "User erstellt Profil" ON user_profiles FOR INSERT WITH CHECK (auth.uid() = id);
-CREATE POLICY "User aktualisiert eigenes Profil" ON user_profiles FOR UPDATE USING (auth.uid() = id);
-CREATE POLICY "User sieht eigene Favoriten" ON user_favorites FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "User erstellt Favoriten" ON user_favorites FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "User löscht eigene Favoriten" ON user_favorites FOR DELETE USING (auth.uid() = user_id);
+-- Plants: Public read-only
+CREATE POLICY "Plants sind öffentlich lesbar" ON plants
+  FOR SELECT USING (true);
+
+-- Plant Images: Public read-only
+CREATE POLICY "Plant Images sind öffentlich lesbar" ON plant_images
+  FOR SELECT USING (true);
+
+-- User Profiles: User liest nur seinen eigenen
+CREATE POLICY "User liest eigenes Profil" ON user_profiles
+  FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "User erstellt Profil" ON user_profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "User aktualisiert eigenes Profil" ON user_profiles
+  FOR UPDATE USING (auth.uid() = id);
+
+-- Favorites: Nur der User sieht seine eigenen Favoriten
+CREATE POLICY "User sieht eigene Favoriten" ON favorites
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "User erstellt Favoriten" ON favorites
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "User löscht eigene Favoriten" ON favorites
+  FOR DELETE USING (auth.uid() = user_id);
 
 -- =====================================================
 -- FUNCTIONS & TRIGGERS
 -- =====================================================
 
+-- Updated_at Trigger
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -115,22 +144,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS update_plants_updated_at ON plants;
 CREATE TRIGGER update_plants_updated_at
   BEFORE UPDATE ON plants
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
 -- =====================================================
--- STORAGE
+-- STORAGE BUCKET
 -- =====================================================
 
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('plant-images', 'plant-images', true)
-ON CONFLICT (id) DO NOTHING;
-
-CREATE POLICY "Public Read Access" ON storage.objects
-  FOR SELECT USING (bucket_id = 'plant-images');
+-- Storage Bucket wird über Supabase CLI oder Dashboard erstellt:
+-- Bucket: plant-images
+-- Public Access: ja
 ```
 
 ### 2. Verbindung testen
@@ -157,7 +182,7 @@ ORDER BY tablename, indexname;
 -- Prüfe RLS
 SELECT relname as table_name, relrowsecurity as rls_enabled
 FROM pg_class
-WHERE relname IN ('plants', 'plant_images', 'user_profiles', 'user_favorites');
+WHERE relname IN ('plants', 'plant_images', 'user_profiles', 'favorites');
 
 -- Prüfe Policies
 SELECT schemaname, tablename, policyname, permissive, roles, cmd
@@ -173,7 +198,7 @@ ORDER BY tablename, policyname;
 | `plants` | 87.000 Pflanzen mit Volltext-Suche | Public read |
 | `plant_images` | Multi-Bild Support | Public read |
 | `user_profiles` | Anonymous Auth | User liest eigenen |
-| `user_favorites` | Private Favoriten | Nur eigene |
+| `favorites` | Private Favoriten | Nur eigene |
 
 ## Indizes
 
@@ -189,7 +214,8 @@ ORDER BY tablename, policyname;
 
 **Foreign Keys:**
 - `idx_plant_images_plant_id` - Join-Optimierung
-- `idx_user_favorites_user_id` - Join-Optimierung
+- `idx_favorites_user_id` - Join-Optimierung
+- `idx_favorites_plant_id` - Join-Optimierung
 
 ## Client Usage
 
@@ -210,7 +236,7 @@ const { data: orchids } = await supabase
 
 // Favoriten abrufen (mit User Context)
 const { data: favorites } = await supabase
-  .from('user_favorites')
+  .from('favorites')
   .select('*, plants(*)')
 ```
 

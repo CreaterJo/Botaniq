@@ -1,0 +1,12 @@
+# Large data files (for migration script only, not deployed)
+public/data/
+
+# Local development only
+.env.local
+.env.*.local
+
+# Claude Code worktrees
+.claude/worktrees/
+
+# OS files
+.DS_Store
