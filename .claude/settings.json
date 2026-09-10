@@ -5,7 +5,10 @@
       "Bash(claude plugins marketplace list *)",
       "Bash(gh search repos *)",
       "Bash(npm view *)",
-      "Bash(npm search *)"
+      "Bash(npm search *)",
+      "Bash(dir *)",
+      "mcp__firecrawl__firecrawl_search",
+      "mcp__firecrawl__firecrawl_scrape"
     ]
   }
 }
