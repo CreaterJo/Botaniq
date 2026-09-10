@@ -1,8 +1,41 @@
-require('dotenv').config()
+const fs = require('fs')
+const path = require('path')
+
+// Load .env.local or .env manually if present
+function loadEnv() {
+  const envPaths = [
+    path.join(__dirname, '../../../.env.local'),
+    path.join(__dirname, '../../../.env'),
+    path.join(process.cwd(), '.env.local'),
+    path.join(process.cwd(), '.env'),
+  ]
+  for (const envPath of envPaths) {
+    if (fs.existsSync(envPath)) {
+      const lines = fs.readFileSync(envPath, 'utf8').split('\n')
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (!trimmed || trimmed.startsWith('#')) continue
+        const eqIdx = trimmed.indexOf('=')
+        if (eqIdx > 0) {
+          const key = trimmed.slice(0, eqIdx).trim()
+          let val = trimmed.slice(eqIdx + 1).trim()
+          if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+            val = val.slice(1, -1)
+          }
+          if (!process.env[key]) {
+            process.env[key] = val
+          }
+        }
+      }
+    }
+  }
+}
+loadEnv()
+
 const { createClient } = require('@supabase/supabase-js')
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'https://yagiqadbqdufpzapdrvc.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_Ka8Idhgn5TPkrIKt0rucvg_xL5xHXCJ'
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
